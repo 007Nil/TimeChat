@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TimeChat</string>
+    <string name="navigation_draw_open">Open Navigation drawer</string>
+    <string name="navigation_draw_close">Close Navigation drawer</string>
+</resources>

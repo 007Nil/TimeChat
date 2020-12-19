@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ADMIN PANEL"
+        android:gravity="center"
+        android:id="@+id/header_admin_panel"
+        />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Date"
+        android:id="@+id/date_picker"
+        android:layout_below="@+id/header_admin_panel"
+        />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Time"
+        android:id="@+id/time_picker"
+        android:layout_below="@+id/date_picker"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/time_picker"
+        android:id="@+id/save_data"
+        android:layout_alignParentEnd="true"
+        android:text="Save Data"/>
+</RelativeLayout>
