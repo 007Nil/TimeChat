@@ -6,27 +6,29 @@ import java.util.Date;
 
 public class TimeChatModel {
 
-    private Intent id;
+    private int id;
     private String time;
     private Date createdAt;
     private Integer adminID;
+    private String registedDate;
 
 
     public TimeChatModel() {
     }
 
-    public TimeChatModel(Intent id, String time, Date createdAt, Integer adminID) {
+    public TimeChatModel(int id, String time, Date createdAt, Integer adminID, String registedDate) {
         this.id = id;
         this.time = time;
         this.createdAt = createdAt;
         this.adminID = adminID;
+        this.registedDate = registedDate;
     }
 
-    public Intent getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Intent id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -54,13 +56,22 @@ public class TimeChatModel {
         this.adminID = adminID;
     }
 
+    public String getRegistedDate() {
+        return registedDate;
+    }
+
+    public void setRegistedDate(String registedDate) {
+        this.registedDate = registedDate;
+    }
+
     @Override
     public String toString() {
         return "TimeChatModel{" +
                 "id=" + id +
                 ", time='" + time + '\'' +
-                ", createdAt='" + createdAt + '\'' +
+                ", createdAt=" + createdAt +
                 ", adminID=" + adminID +
+                ", registedDate='" + registedDate + '\'' +
                 '}';
     }
 }

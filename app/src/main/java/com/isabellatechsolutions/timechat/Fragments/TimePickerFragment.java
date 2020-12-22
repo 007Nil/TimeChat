@@ -44,6 +44,6 @@ public class TimePickerFragment extends DialogFragment {
     }
 
     public void setCallBack(TimePickerDialog.OnTimeSetListener onTime) {
-        onTime = onTimeSet;
+        onTimeSet = onTime;
     }
 }

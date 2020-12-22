@@ -6,13 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 
 import com.isabellatechsolutions.timechat.Model.AdminModel;
 import com.isabellatechsolutions.timechat.Model.TimeChatModel;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -40,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ADMIN_NAME_COL + " TEXT NOT NULL ,"+ ADMIN_EMAIL_COL + " TEXT NOT NULL,"+ ADMIN_PASSWORD + " TEXT NOT NULL,"+ ADMIN_VALID_COL + " BOOL)";
 
         String createTimeChatTableStatement = "CREATE TABLE "+ TIMECHAT_TABLE_NAME+ " ("+ID_COL+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TIME_COL+" TEXT NOT NULL ,"+CREATED_AT_COL+" TEXT NOT NULL, "+ADMIN_ID_FOR_COL+ " INTEGER)";
+                TIME_COL+" TEXT NOT NULL ,"+CREATED_AT_COL+" DATE NOT NULL, "+ADMIN_ID_FOR_COL+ " INTEGER)";
 
         db.execSQL(createAdminTableStatement);
         db.execSQL(createTimeChatTableStatement);
@@ -140,7 +145,85 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //    TIMECHAT TABLE OPERATIONS
 
     public boolean addTimes (TimeChatModel timeChatModel){
-        return true;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(TIME_COL,timeChatModel.getTime());
+        cv.put(CREATED_AT_COL,timeChatModel.getRegistedDate());
+        cv.put(ADMIN_ID_FOR_COL, timeChatModel.getAdminID());
+
+        long result = db.insert(TIMECHAT_TABLE_NAME,null,cv);
+
+        if (result == -1){
+            return false;
+        }else{
+            return true;
+        }
     }
+
+
+    public List<TimeChatModel> findAllData(){
+        List<TimeChatModel> chatModel = new ArrayList<TimeChatModel>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT * FROM "+TIMECHAT_TABLE_NAME+" WHERE "+CREATED_AT_COL+" <= DATE('now','localtime') AND CREATED_AT >= DATE('now','-6 day') ORDER BY CREATED_AT ASC ";
+//          String queryString = "SELECT * FROM "+TIMECHAT_TABLE_NAME;
+        Cursor cursor = db.rawQuery(queryString, null);
+        if (cursor.moveToFirst()) {
+            do {
+                TimeChatModel chat = new TimeChatModel();
+                chat.setId(cursor.getInt(0));
+                chat.setTime(cursor.getString(1));
+                chat.setRegistedDate(cursor.getString(2));
+                chat.setAdminID(cursor.getInt(3));
+//                System.out.println("HITT"+cursor.getString(2));
+
+                chatModel.add(chat);
+
+            } while (cursor.moveToNext());
+        } else {
+            // error occur do noting
+        }
+        cursor.close();
+        db.close();
+        return  chatModel;
+    }
+
+
+    public int findDateCount(String date){
+        int returnData = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT count(*) FROM TIMECHAT_TABLE WHERE CREATED_AT = DATE('"+date+"');";
+        Cursor cursor = db.rawQuery(queryString,null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                returnData = cursor.getInt(0);
+            } while (cursor.moveToNext());
+        }else{
+//            Error
+        }
+
+        return returnData;
+    }
+
+    public List<String> distinctDates(){
+        List<String> listOfDistinct = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT DISTINCT CREATED_AT FROM TIMECHAT_TABLE WHERE CREATED_AT <= DATE('now','localtime') AND CREATED_AT >= DATE('now','-7 day') ORDER BY CREATED_AT ASC ;";
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        if (cursor.moveToFirst()){
+            do{
+                listOfDistinct.add(cursor.getString(0));
+            }while (cursor.moveToNext());
+        }else{
+//            Error
+        }
+        return listOfDistinct;
+    }
+
+
 
 }

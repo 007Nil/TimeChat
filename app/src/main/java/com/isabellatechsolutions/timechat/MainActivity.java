@@ -24,6 +24,11 @@ import com.isabellatechsolutions.timechat.Fragments.HomeFragment;
 import com.isabellatechsolutions.timechat.Fragments.LoginFragment;
 import com.isabellatechsolutions.timechat.Fragments.RegisterAdminFragment;
 import com.isabellatechsolutions.timechat.Model.AdminModel;
+import com.isabellatechsolutions.timechat.Model.TimeChatModel;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoginFragment.LoginFragmentListener
     , AdminPanelFragment.AdminPanelFragmentationListener
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private LoginFragment loginFragment;
     private DatabaseHelper databaseHelper;
+    private AdminPanelFragment adminPanelFragment;
 
 
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -79,19 +85,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         databaseHelper = new DatabaseHelper(MainActivity.this);
         databaseHelper.addAdmin(adminModel);
-
-//        Toast.makeText(MainActivity.this, databaseHelper.findAllAdmins().toString(),Toast.LENGTH_SHORT).show();
-
-//        Admin panel Code
-
-//        getDate = findViewById(R.id.date_picker);
-//
-//        getDate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this,"TEST", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
     }
 
@@ -172,6 +165,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new RegisterAdminFragment()).commit();
                 navigationView.setCheckedItem(R.id.register);
+            }else {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new AdminPanelFragment()).commit();
+                navigationView.setCheckedItem(R.id.admin_panel);
             }
 
         }else{
@@ -227,14 +224,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onInputSendAdminPanel(CharSequence charSequenceDate) {
-        System.out.println("HIT");
+    public void onInputSendAdminPanel(CharSequence charSequenceDate, CharSequence charSequenceTime) {
+//        System.out.println(databaseHelper.findDateCount(charSequenceDate.toString()));
+        if (databaseHelper.findDateCount(charSequenceDate.toString()) <= 8) {
+            TimeChatModel timeChatModel = new TimeChatModel();
+            try {
+                timeChatModel.setTime(charSequenceTime.toString());
+//            timeChatModel.setCreatedAt(date);
+                timeChatModel.setAdminID(1);
+                timeChatModel.setRegistedDate(charSequenceDate.toString());
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
+//        System.out.println(timeChatModel.getCreatedAt().toString());
+
+            boolean result = databaseHelper.addTimes(timeChatModel);
+
+            if (result == true) {
+                List<TimeChatModel> timeChaTData = databaseHelper.findAllData();
+            Toast.makeText(MainActivity.this, "Successful !!", Toast.LENGTH_SHORT).show();
+                adminPanelFragment = new AdminPanelFragment();
+                adminPanelFragment.clearTextField();
+
+
+            } else {
+                Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Toast.makeText(MainActivity.this, "8 entries are done for "+charSequenceDate.toString(), Toast.LENGTH_LONG).show();
+        }
+
+//        System.out.println(charSequenceDate.toString());
+//        System.out.println(charSequenceTime.toString());
     }
-
-
-//    @Override
-//    public void onInputSendAdminPanel(CharSequence date) {
-//        Toast.makeText(MainActivity.this,"TEST", Toast.LENGTH_SHORT).show();
-//
-//    }
 }
