@@ -15,7 +15,9 @@ import com.isabellatechsolutions.timechat.Model.TimeChatModel;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,9 +33,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TIMECHAT_TABLE_NAME = "TIMECHAT_TABLE";
     public static final String ID_COL = "ID";
-    public static final String TIME_COL = "TIME";
+    public static final String TIME_COL1 = "TIME1";
+    public static final String ENTRY_NO = "ENTRY_NO";
+
     public static final String CREATED_AT_COL = "CREATED_AT";
     public static final String ADMIN_ID_FOR_COL = "ADMIN_ID";
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    LocalDate now = LocalDate.now();
+    LocalDate MONDAY = now.with(DayOfWeek.MONDAY);
+    LocalDate SUNDAY = now.with(DayOfWeek.SUNDAY);
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, "timechat.db", null, 1);
@@ -45,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ADMIN_NAME_COL + " TEXT NOT NULL ,"+ ADMIN_EMAIL_COL + " TEXT NOT NULL,"+ ADMIN_PASSWORD + " TEXT NOT NULL,"+ ADMIN_VALID_COL + " BOOL)";
 
         String createTimeChatTableStatement = "CREATE TABLE "+ TIMECHAT_TABLE_NAME+ " ("+ID_COL+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TIME_COL+" TEXT NOT NULL ,"+CREATED_AT_COL+" DATE NOT NULL, "+ADMIN_ID_FOR_COL+ " INTEGER)";
+                TIME_COL1+" TEXT NOT NULL ,"+ENTRY_NO+" INTEGER NOT NULL , "+CREATED_AT_COL+" DATE NOT NULL, "+ADMIN_ID_FOR_COL+ " INTEGER)";
 
         db.execSQL(createAdminTableStatement);
         db.execSQL(createTimeChatTableStatement);
@@ -148,7 +157,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(TIME_COL,timeChatModel.getTime());
+        cv.put(TIME_COL1,timeChatModel.getTime());
+//        cv.put(TIME_COL2,timeChatModel.getTime2());
+//        cv.put(TIME_COL3,timeChatModel.getTime3());
+        cv.put(ENTRY_NO,timeChatModel.getEntry_no());
         cv.put(CREATED_AT_COL,timeChatModel.getRegistedDate());
         cv.put(ADMIN_ID_FOR_COL, timeChatModel.getAdminID());
 
@@ -166,7 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<TimeChatModel> chatModel = new ArrayList<TimeChatModel>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM "+TIMECHAT_TABLE_NAME+" WHERE "+CREATED_AT_COL+" <= DATE('now','localtime') AND CREATED_AT >= DATE('now','-6 day') ORDER BY CREATED_AT ASC ";
+        String queryString = "SELECT * FROM "+TIMECHAT_TABLE_NAME+" WHERE "+CREATED_AT_COL+" <= DATE('"+SUNDAY+"') AND CREATED_AT >= DATE('"+MONDAY+"') ORDER BY CREATED_AT ASC ";
 //          String queryString = "SELECT * FROM "+TIMECHAT_TABLE_NAME;
         Cursor cursor = db.rawQuery(queryString, null);
         if (cursor.moveToFirst()) {
@@ -174,8 +186,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TimeChatModel chat = new TimeChatModel();
                 chat.setId(cursor.getInt(0));
                 chat.setTime(cursor.getString(1));
-                chat.setRegistedDate(cursor.getString(2));
-                chat.setAdminID(cursor.getInt(3));
+                chat.setEntry_no(cursor.getInt(2));
+                chat.setRegistedDate(cursor.getString(3));
+                chat.setAdminID(cursor.getInt(4));
 //                System.out.println("HITT"+cursor.getString(2));
 
                 chatModel.add(chat);
@@ -211,7 +224,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<String> distinctDates(){
         List<String> listOfDistinct = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT DISTINCT CREATED_AT FROM TIMECHAT_TABLE WHERE CREATED_AT <= DATE('now','localtime') AND CREATED_AT >= DATE('now','-7 day') ORDER BY CREATED_AT ASC ;";
+        String queryString = "SELECT DISTINCT CREATED_AT FROM TIMECHAT_TABLE WHERE CREATED_AT <= DATE('"+SUNDAY+"') AND CREATED_AT >= DATE('"+MONDAY+"') ORDER BY CREATED_AT ASC ;";
         Cursor cursor = db.rawQuery(queryString, null);
 
         if (cursor.moveToFirst()){
@@ -222,6 +235,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //            Error
         }
         return listOfDistinct;
+    }
+
+    public  boolean checkIsExistorNot(String date){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlStatement = "SELECT * FROM "+TIMECHAT_TABLE_NAME+" WHERE "+CREATED_AT_COL+" = '"+date+"';";
+        Cursor cursor = db.rawQuery(sqlStatement,null);
+
+        if (cursor != null && cursor.getCount() > 0){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+
+    public boolean updateChatTable(String date,String time1,String time2, String time3, int entryNo){
+        String dataEntryString = "Entry"+String.valueOf(entryNo)+"-"+time1+"-"+time2+"-"+time3;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TIME_COL1,dataEntryString);
+        try {
+            db.update(TIMECHAT_TABLE_NAME, contentValues, CREATED_AT_COL + "= ? AND " + ENTRY_NO + " = ?", new String[]{date, String.valueOf(entryNo)});
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
 

@@ -46,6 +46,7 @@ public class LoginFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println(getActivity());
                 CharSequence email_value = emailId.getText();
                 CharSequence password_value = password.getText();
                 listener.onInputSent(email_value, password_value);

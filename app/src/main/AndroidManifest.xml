@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TimeChat">
-        <activity android:name=".Fragments.LoginFragment" />
+        <activity android:name=".EditDataActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.TimeChat.NoActionBar">

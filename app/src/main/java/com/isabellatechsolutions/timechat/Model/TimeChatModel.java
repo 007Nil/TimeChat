@@ -8,20 +8,19 @@ public class TimeChatModel {
 
     private int id;
     private String time;
-    private Date createdAt;
     private Integer adminID;
     private String registedDate;
-
+    private int entry_no;
 
     public TimeChatModel() {
     }
 
-    public TimeChatModel(int id, String time, Date createdAt, Integer adminID, String registedDate) {
+    public TimeChatModel(int id, String time, Integer adminID, String registedDate, int entry_no) {
         this.id = id;
         this.time = time;
-        this.createdAt = createdAt;
         this.adminID = adminID;
         this.registedDate = registedDate;
+        this.entry_no = entry_no;
     }
 
     public int getId() {
@@ -40,14 +39,6 @@ public class TimeChatModel {
         this.time = time;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Integer getAdminID() {
         return adminID;
     }
@@ -64,14 +55,23 @@ public class TimeChatModel {
         this.registedDate = registedDate;
     }
 
+    public int getEntry_no() {
+        return entry_no;
+    }
+
+    public void setEntry_no(int entry_no) {
+        this.entry_no = entry_no;
+    }
+
     @Override
     public String toString() {
         return "TimeChatModel{" +
                 "id=" + id +
                 ", time='" + time + '\'' +
-                ", createdAt=" + createdAt +
                 ", adminID=" + adminID +
                 ", registedDate='" + registedDate + '\'' +
+                ", entry_no=" + entry_no +
                 '}';
     }
 }
+

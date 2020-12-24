@@ -1,13 +1,10 @@
 package com.isabellatechsolutions.timechat;
 
-import android.content.Intent;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +15,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.isabellatechsolutions.timechat.Adopter.ChatModelAdopter;
 import com.isabellatechsolutions.timechat.Database.DatabaseHelper;
 import com.isabellatechsolutions.timechat.Fragments.AdminPanelFragment;
 import com.isabellatechsolutions.timechat.Fragments.HomeFragment;
@@ -53,11 +51,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int id = 0;
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         removeSharedPrefrenceData();
 
         toolbar = findViewById(R.id.toolbar);
@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         databaseHelper = new DatabaseHelper(MainActivity.this);
         databaseHelper.addAdmin(adminModel);
 
+//        final ChatModelAdopter chatModelAdopter = new ChatModelAdopter();
+//
+//        chatModelAdopter.setOnClickListener(this);
     }
 
     @Override
@@ -129,11 +132,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
             case R.id.logout:
-                removeSharedPrefrenceData();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new HomeFragment()).commit();
-                navigationView.setCheckedItem(R.id.home);
-                Toast.makeText(MainActivity.this, "Logout Successful !!", Toast.LENGTH_SHORT).show();
+                loadData();
+                if (text_email.equals("") || text_passwd.equals("") || text_passwd.equals("password") || text_email.equals("email")) {
+                    Toast.makeText(MainActivity.this, "You Are Not Logged in", Toast.LENGTH_SHORT).show();
+                }else {
+                    removeSharedPrefrenceData();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                            new HomeFragment()).commit();
+                    navigationView.setCheckedItem(R.id.home);
+                    Toast.makeText(MainActivity.this, "Logout Successful !!", Toast.LENGTH_SHORT).show();
+                }
 
         }
 
@@ -255,7 +263,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(MainActivity.this, "8 entries are done for "+charSequenceDate.toString(), Toast.LENGTH_LONG).show();
         }
 
-//        System.out.println(charSequenceDate.toString());
-//        System.out.println(charSequenceTime.toString());
     }
+
+//    @Override
+//    public void onItemClick() {
+//
+//    }
 }

@@ -12,6 +12,9 @@
         android:text="ADMIN PANEL"
         android:gravity="center"
         android:id="@+id/header_admin_panel"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:textSize="15dp"
         />
 
     <com.google.android.material.textfield.TextInputEditText
@@ -20,6 +23,7 @@
         android:hint="Enter Date"
         android:id="@+id/date_picker"
         android:layout_below="@+id/header_admin_panel"
+        android:visibility="gone"
         />
 
     <com.google.android.material.textfield.TextInputEditText
@@ -28,6 +32,7 @@
         android:hint="Enter Time"
         android:id="@+id/time_picker"
         android:layout_below="@+id/date_picker"
+        android:visibility="gone"
         />
 
     <Button
@@ -38,7 +43,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="31dp"
         android:layout_marginEnd="2dp"
-        android:text="Save Data" />
+        android:text="Save Data"
+        android:visibility="gone"/>
 
 
     <Button
@@ -49,7 +55,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="4dp"
-        android:text="Get DATE" />
+        android:text="Get DATE"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/get_time"
@@ -57,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/get_date"
         android:layout_alignParentEnd="true"
-
+        android:visibility="gone"
         android:layout_marginTop="-8dp"
         android:layout_marginEnd="0dp"
         android:text="GET TIME" />

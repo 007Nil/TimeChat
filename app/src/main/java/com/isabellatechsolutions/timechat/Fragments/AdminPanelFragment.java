@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.isabellatechsolutions.timechat.Adopter.ChatModelAdopter;
 import com.isabellatechsolutions.timechat.Database.DatabaseHelper;
+import com.isabellatechsolutions.timechat.EditDataActivity;
 import com.isabellatechsolutions.timechat.Model.ChatModel;
 import com.isabellatechsolutions.timechat.Model.TimeChatModel;
 import com.isabellatechsolutions.timechat.R;
@@ -41,7 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class AdminPanelFragment extends Fragment {
+public class AdminPanelFragment extends Fragment implements ChatModelAdopter.OnItemClickListener {
 
     private TextView textView_date;
     private TextView textView_time;
@@ -56,9 +60,15 @@ public class AdminPanelFragment extends Fragment {
 
     private AdminPanelFragmentationListener adminPanelFragmentationListener;
 
+    public static final String EMAIL = "email";
+    public static final String PASSWORD = "password";
+
     public AdminPanelFragment(){
 
     }
+
+
+
     public interface AdminPanelFragmentationListener{
         void onInputSendAdminPanel(CharSequence charSequenceDate, CharSequence charSequenceTime);
     }
@@ -81,6 +91,8 @@ public class AdminPanelFragment extends Fragment {
         get_date_btn.setOnClickListener(new DateClickListener());
         get_time_btn.setOnClickListener(new TimeClickListener());
 
+
+
         DatabaseHelper db = new DatabaseHelper(getActivity());
         List<String> distinctDates = db.distinctDates();
         List<TimeChatModel> timeChatModels = db.findAllData();
@@ -91,7 +103,7 @@ public class AdminPanelFragment extends Fragment {
             int i = 1;
 //            System.out.println(eachDate);
             for (TimeChatModel eachItem : timeChatModels.stream().filter(item -> item.getRegistedDate().equals(eachDate)).collect(Collectors.toList())){
-                argumentString += String.valueOf(i)+" Time:"+eachItem.getTime()+",";
+                argumentString += eachItem.getTime()+",";
                 i++;
             }
 
@@ -192,7 +204,7 @@ public class AdminPanelFragment extends Fragment {
                     int i = 1;
 //            System.out.println(eachDate);
                     for (TimeChatModel eachItem : timeChatModels.stream().filter(item -> item.getRegistedDate().equals(eachDate)).collect(Collectors.toList())){
-                        argumentString += String.valueOf(i)+"Time:"+eachItem.getTime()+",";
+                        argumentString += eachItem.getTime()+",";
                         i++;
                     }
 
@@ -264,6 +276,11 @@ public class AdminPanelFragment extends Fragment {
 
             }
         });
+
+        ChatModelAdopter chatModelAdopter = new ChatModelAdopter();
+
+        chatModelAdopter.setOnClickListener(this);
+
         return view;
     }
 
@@ -416,5 +433,48 @@ public class AdminPanelFragment extends Fragment {
 
     public void clearTextField(){
         System.out.println("HIT");
+    }
+
+    @Override
+    public void onItemClick(CharSequence time, CharSequence date) {
+        try {
+            SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+            String email = sharedPreferences.getString(EMAIL, "");
+            String password = sharedPreferences.getString(PASSWORD, "");
+
+            System.out.println("Email"+email);
+            System.out.println("Pass"+password);
+
+            if (email.equals("") || password.equals("") || password.equals("password") || email.equals("email")) {
+
+            }else{
+
+                int entryNo = Character.getNumericValue(time.toString().charAt(2));
+                String oneDigit = String.valueOf(time.toString().charAt(12));
+                String twoDigit = String.valueOf(time.toString().charAt(17))+String.valueOf(time.toString().charAt(18));
+                String threeDigit = String.valueOf(time.toString().charAt(23))+
+                        String.valueOf(time.toString().charAt(24))+
+                        String.valueOf(time.toString().charAt(25));
+                Bundle bundle = new Bundle();
+                bundle.putString("DATE",date.toString());
+                bundle.putInt("entryNo",entryNo);
+                bundle.putString("oneDigit",oneDigit);
+                bundle.putString("twoDigit",twoDigit);
+                bundle.putString("threeDigit",threeDigit);
+
+                EditDataFragment edf = new EditDataFragment();
+                edf.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        edf).commit();
+
+//                intent.putExtras(bundle);
+//                startActivity(intent);
+
+                Toast.makeText(getContext(),entryNo+"  "+date.toString(), Toast.LENGTH_LONG).show();
+            }
+        }catch (Exception e){
+            System.out.println(e);
+        }
     }
 }

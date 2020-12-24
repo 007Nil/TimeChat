@@ -1,5 +1,8 @@
 package com.isabellatechsolutions.timechat.Fragments;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,13 +17,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.isabellatechsolutions.timechat.Adopter.ChatModelAdopter;
 import com.isabellatechsolutions.timechat.Database.DatabaseHelper;
+import com.isabellatechsolutions.timechat.EditDataActivity;
 import com.isabellatechsolutions.timechat.Model.ChatModel;
 import com.isabellatechsolutions.timechat.Model.TimeChatModel;
 import com.isabellatechsolutions.timechat.R;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class HomeFragment extends Fragment {
 
@@ -30,24 +39,63 @@ public class HomeFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
 
 
+
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_home, container, false);
 
+//      Get Dates in Between
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate now = LocalDate.now();
+        LocalDate MONDAY = now.with(DayOfWeek.MONDAY);
+        LocalDate NEXMONDAYTDAY = now.with(DayOfWeek.SUNDAY).plusDays(1);
+
+        List<String> sevenDaysOfaWeek = getDatesBetweenUsingJava8(MONDAY, NEXMONDAYTDAY);
         DatabaseHelper db = new DatabaseHelper(getActivity());
+
+
+        for (String eachDate: sevenDaysOfaWeek){
+            for (int i = 1; i <=8; i++) {
+                boolean result = db.checkIsExistorNot(eachDate);
+                if( db.findDateCount(eachDate) < 8) {
+                    if (result == false) {
+//                    System.out.println("HIT");
+                    TimeChatModel timechatModel = new TimeChatModel();
+                    timechatModel.setTime(String.valueOf(i));
+                    timechatModel.setRegistedDate(eachDate);
+                    timechatModel.setEntry_no(i);
+                    timechatModel.setAdminID(1);
+
+                    db.addTimes(timechatModel);
+                }else{
+                        System.out.println("HIT");
+                        TimeChatModel timechatModel = new TimeChatModel();
+                        timechatModel.setTime(String.valueOf(i));
+                        timechatModel.setRegistedDate(eachDate);
+                        timechatModel.setEntry_no(i);
+                        timechatModel.setAdminID(1);
+                        db.addTimes(timechatModel); }
+                }
+            }
+        }
+
+
+
         List<String> distinctDates = db.distinctDates();
         List<TimeChatModel> timeChatModels = db.findAllData();
         ArrayList<ChatModel> chatModel = new ArrayList<>();
 
         for (String eachDate: distinctDates){
             String argumentString = eachDate+",";
+            System.out.println(eachDate);
             int i = 1;
-//            System.out.println(eachDate);
             for (TimeChatModel eachItem : timeChatModels.stream().filter(item -> item.getRegistedDate().equals(eachDate)).collect(Collectors.toList())){
-                argumentString += String.valueOf(i)+" Time:"+eachItem.getTime()+",";
+
+                argumentString += eachItem.getTime()+",";
                 i++;
             }
 
@@ -121,6 +169,16 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
 
+
         return view;
     }
+
+    public static List<String> getDatesBetweenUsingJava8(LocalDate startDate, LocalDate endDate) {
+
+        long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+        return IntStream.iterate(0, i -> i + 1).limit(numOfDaysBetween).mapToObj(i -> startDate.plusDays(i).toString())
+                .collect(Collectors.toList());
+    }
+
+
 }

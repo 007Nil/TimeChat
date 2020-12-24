@@ -34,6 +34,12 @@
             android:title="Register Admin"
             android:id="@+id/register"
             android:icon="@drawable/ic_baseline_how_to_reg_24"
+            android:visible="false"
+            />
+
+        <item
+            android:visible="false"
+            android:id="@+id/editdata"
             />
 
         <item

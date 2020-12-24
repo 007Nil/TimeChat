@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditDataActivity">
+
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="-25dp"
+        android:inputType="numberDecimal"
+        android:maxLength="1"
+        android:gravity="center"
+        android:hint="Enter 1st value"
+        android:id="@+id/value1"/>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="-25dp"
+        android:inputType="numberDecimal"
+        android:maxLength="2"
+        android:gravity="center"
+        android:hint="Enter 2nd value"
+        android:id="@+id/value2"
+        android:layout_below="@id/value1"
+        />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="-25dp"
+        android:inputType="numberDecimal"
+        android:maxLength="3"
+        android:gravity="center"
+        android:hint="Enter 3rd value"
+        android:layout_below="@id/value2"
+        android:id="@+id/value3"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/saveValues"
+        android:paddingTop="6dp"
+        android:layout_below="@id/value3"
+        android:layout_alignParentEnd="true"
+        android:text="SAVE DATE"/>
+
+</RelativeLayout>
